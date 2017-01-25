@@ -1,0 +1,48 @@
+<html>
+  <head>
+      <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
+  </head>
+
+  <body>
+       <fieldset>
+           <legend>
+               Create a query 
+           </legend>
+           <form method="get">
+               <p>
+                   <label for="#test_suit">Test suit</label>
+                   <input type="text" id="test_suit" value="content_unittest">
+               </p>
+               <p>
+                   <label for="">Tasks limit</label>
+                   <input type="text" id="tasks_limit" value="1">
+               </p>
+               <p>
+                   <button id="btn_submit" value="lll" name="submit"> Submit </button>
+               </p>
+           </form>
+       </fieldset>
+       <script>
+		   $(document).ready( function() {
+				$("#btn_submit").click(function(e) {
+					e.preventDefault();
+					$.ajax({
+						url: window.location.href + "get_data/",
+						data: {
+							test_suit: $("#test_suit").val(),
+							tasks_limit: $("#tasks_limit").val(),
+						},
+						success: function(result) {
+							console.log(result);
+							alert('ok');
+						},
+						error: function(result) {
+							alert('error')
+						}
+					})
+				})
+			});
+	  </script>
+       
+  </body>
+</html>
