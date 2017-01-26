@@ -30,7 +30,10 @@ class Test:
     self._dict_task_id_to_runtime = {}
     Test.__all[name] = self
 
-  def AddRun(self, task_id): self.runs.append(task_id)
+  def AddRun(self, task_id, runtime):
+    self.runs.append(task_id)
+    self._dict_task_id_to_runtime[task_id] = runtime
+
   def AddSuccess(self, task_id): self.success.append(task_id)
   def AddFail(self, task_id): self.fail.append(task_id)
   def AddCrash(self, task_id): self.crash.append(task_id)
@@ -41,7 +44,9 @@ class Test:
            or len(self.exit_failure) >0
 
   def getRuntime(self, task_id):
-    return self._dict_task_id_to_runtime[task_id]
+    if task_id in self._dict_task_id_to_runtime:
+      return self._dict_task_id_to_runtime[task_id]
+    return -1
 
 
 class Task:
@@ -67,7 +72,7 @@ class Task:
 
     with open(filename, 'rb') as f:
       jsonf = json.load(f)
-      self.all_tests = jsonf["all_tests"]
+      # self.all_tests = jsonf["all_tests"]
       if 'global_tags' not in jsonf:
         sys.stderr.write('Unable to read info for %s' % self.id)
       else:
@@ -89,7 +94,6 @@ class Task:
         test_results = all_results[test_name]
         test = Test.Get(test_name)
         self.all_tests.append(test)
-        test.AddRun(self.id)
         for res in test_results:
           if res['status'] == 'SUCCESS':
             test.AddSuccess(self.id)
@@ -103,3 +107,6 @@ class Task:
             test.AddExitFilure(self.id)
           else:
             sys.stderr.write('Unknown status: %s\n' % res['status'])
+          # suppose that test_results contains only one element, in other case we need take a look more deeply
+          runtime = res['elapsed_time_ms']
+          test.AddRun(self.id, runtime)
