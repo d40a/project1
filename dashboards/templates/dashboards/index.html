@@ -39,31 +39,36 @@
 	<script>
 		$(document).ready(function () {
 			$("#btn_submit").click(function (e) {
+				e.preventDefault();
+				$('#charts').empty();
+						
+				function proccessData(data, bot_os) {
+					console.log(data);
+					console.log(bot_os);
+					prompDrawingChart(data['buckets'], bot_os);
+				}
+				function getData(url, args) {
+					console.log('print from getData');
+					console.log(args);
+					$.get(url, args, function(data) {
+						proccessData(data, args['os']);
+					});
+				}
+		
 				
 //			 	getting selected oss
-				var selected_chb = [];
 				$('#os_checboxes input:checked').each(function() {
-					selected_chb.push($(this).attr('name'));
-				})
-				
-				alert('Sending a request!');
-//				get array of checked os and submit this array to server
-				e.preventDefault();
-				$.ajax({
-					url: window.location.href + "get_data/",
-					dataType: "json",
-					data: {
-						test_suit: $("#test_suit").val(),
-						tasks_limit: $("#tasks_limit").val(),
-						oss: JSON.stringify(selected_chb),
-					},
-					success: function (result) {
-						alert('server responded');
-						prompDrawingChart(result['buckets']);
-					},
-					error: function (result) {
-						alert('error')
-					}
+					var os = $(this).attr('name');
+					console.log(os);
+					
+					getData(
+						window.location.href + "get_data/", 
+						{
+							test_suit: $("#test_suit").val(),
+							tasks_limit: $("#tasks_limit").val(),
+							os: os,
+						}
+					)	
 				})
 			})
 		});
@@ -71,7 +76,7 @@
 
 	<script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
 	<script type="text/javascript">
-		function prompDrawingChart(frequency_on_intervals) {
+		function prompDrawingChart(frequency_on_intervals, bot_os) {
 			console.log(frequency_on_intervals);
 			var arr_frequency_on_intervals = [['runtime ms', 'number of tests']];
 			for (var interval in frequency_on_intervals) {
@@ -91,19 +96,25 @@
 				);
 
 				var options = {
-					title: 'Runtime of tests',
+					title: 'Runtime of tests on ' + bot_os,
 					legend: {
 						position: 'none'
 					},
 				};
-
-				var chart = new google.visualization.ColumnChart(document.getElementById('chart_div'));
+				var div_id = "chart_div_" + bot_os;
+				var str = '<div id="' + div_id + '" style="width: 1100px; height: 700px;"></div>';
+				console.log(str);
+				$('#charts').append(str);
+				var chart = new google.visualization.ColumnChart(document.getElementById(div_id));
 				chart.draw(data, options);
 			}
 		}
 	</script>
+	<div id='charts'>
+			
 
-	<div id="chart_div" style="width: 1100px; height: 700px;"></div>
+	</div>
+	
 
 </body>
 

@@ -48,7 +48,7 @@ def get_data(request):
   dict_response = SwarmingInteractionController.callCollectCommand(
     request.GET['test_suit'],
     request.GET['tasks_limit'],
-    request.GET['oss'],
+    request.GET['os'],
   )
   json_obj = json.dumps(dict_response)
   return HttpResponse(json_obj, content_type='application/json')

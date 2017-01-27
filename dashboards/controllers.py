@@ -5,9 +5,10 @@ from models import Task, Test
 import tempfile
 import collections
 import subprocess
+import shutil
 
 class SwarmingInteractionController(object):
-  TEMP_DIR = tempfile.mkdtemp(prefix=u'dimaa_tmp')
+  # TEMP_DIR = tempfile.mkdtemp(prefix=u'dimaa_tmp')
 
   SWARMING_PY_DIR = r'/usr/local/google/home/dimaa/dev/luci-py/client/swarming.py'
   # From example/common.py:
@@ -20,20 +21,33 @@ class SwarmingInteractionController(object):
     cmd = [sys.executable, os.path.join(cmd[0])] + cmd[1:]
     if sys.platform != 'win32' and verbose:
       cmd = ['time', '-p'] + cmd
+    print(' '.join(cmd))
     devnull = open(os.devnull, 'w') if not verbose else None
     subprocess.check_call(cmd, stdout=devnull)
 
 
   @staticmethod
-  def _getListOfTasks(test_name, limit):
-    list_file = os.path.join(SwarmingInteractionController.TEMP_DIR, 'list.json')
+  def _getListOfTasks(test_name, limit, temp_dir, bot_os):
+    list_file = os.path.join(temp_dir, 'list.json')
+
+    supported_os = {
+      'mac': 'Mac-10.9',
+      'win': 'Windows-7-SP1',
+      'ubuntu': 'Ubuntu-12.04',
+      'android': 'Android'
+    }
+    bot_os_tag = ''
+    if bot_os in supported_os:
+      bot_os_tag = '&tags=os:' + supported_os[bot_os]
+
     SwarmingInteractionController.run([
         SwarmingInteractionController.SWARMING_PY_DIR, 'query',
         '--limit', limit,
         '-S', 'https://chromium-swarm.appspot.com',
-        'tasks/list?state=COMPLETED&tags=name:%s' % (test_name),
+        'tasks/list?state=COMPLETED&tags=name:%s%s' % (test_name, bot_os_tag),
         '--json', list_file
     ], verbose=False)
+
     tasks = []
     with open(list_file, 'rb') as f:
       jsonf = json.load(f)
@@ -48,8 +62,8 @@ class SwarmingInteractionController(object):
 
 
   @staticmethod
-  def _processResultsForAllOfTheTasks(tasks):
-    taskdir = os.path.join(SwarmingInteractionController.TEMP_DIR, 'results')
+  def _processResultsForAllOfTheTasks(tasks, temp_dir):
+    taskdir = os.path.join(temp_dir, 'results')
 
     SwarmingInteractionController.run([
         SwarmingInteractionController.SWARMING_PY_DIR, 'collect',
@@ -114,7 +128,10 @@ class SwarmingInteractionController(object):
     return dict_response
 
   @staticmethod
-  def callCollectCommand(test_suit, limit, oss=['all']):
-    tasks = SwarmingInteractionController._getListOfTasks(test_suit, limit)
-    SwarmingInteractionController._processResultsForAllOfTheTasks(tasks)
+  def callCollectCommand(test_suit, limit, bot_os='all'):
+    temp_dir = tempfile.mkdtemp(prefix=u'dimaa_tmp')
+    print(temp_dir)
+    tasks = SwarmingInteractionController._getListOfTasks(test_suit, limit, temp_dir, bot_os)
+    SwarmingInteractionController._processResultsForAllOfTheTasks(tasks, temp_dir)
+    shutil.rmtree(temp_dir)
     return SwarmingInteractionController._buildResponse(tasks)
