@@ -114,7 +114,7 @@ class SwarmingInteractionController(object):
     return dict_response
 
   @staticmethod
-  def callCollectCommand(test_suit, limit):
+  def callCollectCommand(test_suit, limit, oss=['all']):
     tasks = SwarmingInteractionController._getListOfTasks(test_suit, limit)
     SwarmingInteractionController._processResultsForAllOfTheTasks(tasks)
     return SwarmingInteractionController._buildResponse(tasks)
