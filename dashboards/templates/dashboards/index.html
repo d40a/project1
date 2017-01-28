@@ -100,6 +100,11 @@
 					legend: {
 						position: 'none'
 					},
+					explorer: {
+						actions: ['dragToZoom', 'rightClickToReset'], 
+						maxZoomIn: 25,
+					},
+					vAxis: {viewWindowMode: "explicit", viewWindow:{ min: 0 }},
 				};
 				var div_id = "chart_div_" + bot_os;
 				var str = '<div id="' + div_id + '" style="width: 1100px; height: 700px;"></div>';
