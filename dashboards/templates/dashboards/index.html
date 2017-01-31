@@ -2,6 +2,11 @@
 
 <head>
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
+	{% load static from staticfiles %}
+	<script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+	<script type="text/javascript" src="{% static '/js/columnChart.js' %}"></script>
+	<script type="text/javascript" src="{% static '/js/histogram.js' %}"></script>
+	<script type="text/javascript" src="{% static '/js/docIsReady.js' %}"></script>
 </head>
 
 <body>
@@ -35,88 +40,9 @@
 	</fieldset>
 
 
+	
 
-	<script>
-		$(document).ready(function () {
-			$("#btn_submit").click(function (e) {
-				e.preventDefault();
-				$('#charts').empty();
-						
-				function proccessData(data, bot_os) {
-					console.log(data);
-					console.log(bot_os);
-					prompDrawingChart(data['buckets'], bot_os);
-				}
-				function getData(url, args) {
-					console.log('print from getData');
-					console.log(args);
-					$.get(url, args, function(data) {
-						proccessData(data, args['os']);
-					});
-				}
-		
-				
-//			 	getting selected oss
-				$('#os_checboxes input:checked').each(function() {
-					var os = $(this).attr('name');
-					console.log(os);
-					
-					getData(
-						window.location.href + "get_data/", 
-						{
-							test_suit: $("#test_suit").val(),
-							tasks_limit: $("#tasks_limit").val(),
-							os: os,
-						}
-					)	
-				})
-			})
-		});
-	</script>
-
-	<script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
-	<script type="text/javascript">
-		function prompDrawingChart(frequency_on_intervals, bot_os) {
-			console.log(frequency_on_intervals);
-			var arr_frequency_on_intervals = [['runtime ms', 'number of tests']];
-			for (var interval in frequency_on_intervals) {
-				var arr_item = [];
-				arr_item.push(interval, frequency_on_intervals[interval]);
-				arr_frequency_on_intervals.push(arr_item);
-			}
-			console.log(arr_frequency_on_intervals);
-			google.charts.load("current", {
-				packages: ["corechart"]
-			});
-			google.charts.setOnLoadCallback(drawChart);
-
-			function drawChart() {
-				var data = google.visualization.arrayToDataTable(
-					arr_frequency_on_intervals
-				);
-
-				var options = {
-					title: 'Runtime of tests on ' + bot_os,
-					legend: {
-						position: 'none'
-					},
-					explorer: {
-						actions: ['dragToZoom', 'rightClickToReset'], 
-						maxZoomIn: 25,
-					},
-					vAxis: {viewWindowMode: "explicit", viewWindow:{ min: 0 }},
-				};
-				var div_id = "chart_div_" + bot_os;
-				var str = '<div id="' + div_id + '" style="width: 1100px; height: 700px;"></div>';
-				console.log(str);
-				$('#charts').append(str);
-				var chart = new google.visualization.ColumnChart(document.getElementById(div_id));
-				chart.draw(data, options);
-			}
-		}
-	</script>
-	<div id='charts'>
-			
+	<div id='charts'>		
 
 	</div>
 	

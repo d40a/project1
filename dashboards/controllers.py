@@ -111,7 +111,7 @@ class SwarmingInteractionController(object):
     for t in tasks:
       cnt_of_ran_tests += len(t.all_tests)
 
-    def build_interval_cnt_dict(buckets, intervals):
+    def build_dict_cnt_on_intervals(buckets, intervals):
       dict = collections.OrderedDict()
       for key in intervals:
         dict['< %s ms' % key[1]] = len(buckets[key])
@@ -120,11 +120,24 @@ class SwarmingInteractionController(object):
     runtime_buckets = {x: [] for x in intervals}
     fill_buckets(tasks, runtime_buckets, intervals)
 
+    def convert_objects_to_serializable_in_dict(dict):
+      # result is not sorted by intervals!!!!!
+      result_dict = collections.OrderedDict()
+      for key in dict:
+        result_dict[str(key)] = []
+        for val in dict[key]:
+          if len(val.dict_task_id_to_runtime) == 0:
+            print(val.name)
+          result_dict[str(key)].append(val)
+
+      return result_dict
+
     dict_response = {
       'cnt_of_tasks': len(tasks),
       'cnt_of_ran_tests': cnt_of_ran_tests,
-      'buckets': build_interval_cnt_dict(runtime_buckets, intervals),
+      'buckets': convert_objects_to_serializable_in_dict(runtime_buckets),
     }
+
     return dict_response
 
   @staticmethod
@@ -134,4 +147,9 @@ class SwarmingInteractionController(object):
     tasks = SwarmingInteractionController._getListOfTasks(test_suit, limit, temp_dir, bot_os)
     SwarmingInteractionController._processResultsForAllOfTheTasks(tasks, temp_dir)
     shutil.rmtree(temp_dir)
-    return SwarmingInteractionController._buildResponse(tasks)
+
+    response = SwarmingInteractionController._buildResponse(tasks)
+    del tasks
+    Test.delAll()
+    Task.delAll()
+    return response

@@ -11,7 +11,7 @@ def index(request):
     'name': 'all',
     'checked': 'checked',
     'disabled': '',
-    'innerHtml': 'All',
+    'innerHtml': 'Mixed',
   }
   oss_dict['ubuntu'] = {
     'name': 'ubuntu',
@@ -50,5 +50,5 @@ def get_data(request):
     request.GET['tasks_limit'],
     request.GET['os'],
   )
-  json_obj = json.dumps(dict_response)
+  json_obj = json.dumps(dict_response, default=lambda o: o.__dict__)
   return HttpResponse(json_obj, content_type='application/json')
