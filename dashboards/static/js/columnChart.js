@@ -13,13 +13,11 @@ function columnChart() {
 	};
 
 	function fillBuckets(tests, partition) {
-		console.log(tests);
-		buckets = new Array(partition.length + 1);
+ 		buckets = new Array(partition.length + 1);
 		for (var i = 0; i < buckets.length; i++) {
 			buckets[i] = new Array();
 		}
-		console.log(buckets);
-		console.log(partition.length);
+ 
 		for (var i = 0; i < tests.length; i++) {
 			var test = tests[i];
 			// looking for first number that is larger than test.runtime
@@ -35,7 +33,6 @@ function columnChart() {
 
 		// remove empty tail elements
 		for (var i = buckets.length - 1; i >= 0; i--) {
-			console.log(buckets[i].length)
 			if (buckets[i].length == 0) buckets.pop();
 			else break;
 		}
@@ -54,7 +51,7 @@ function columnChart() {
 		dataForColumnChart.push(['Rest', buckets[buckets.length - 1].length]);
 		return dataForColumnChart;
 	};
-
+	
 	function DivTag(attributes) {
 		var tag = '<div';
 		for (var key in attributes) {
