@@ -23,10 +23,9 @@ function drawHistogram(results) {
 		);
 
 		var options = {
+			chartArea: { left:'10%' },
 			title: 'Runtime of tests on ',
-			legend: {
-				position: 'none'
-			},
+			legend: { position: 'none' },
 			explorer: {
 				actions: ['dragToZoom', 'rightClickToReset'], 
 				maxZoomIn: 25,
@@ -34,19 +33,29 @@ function drawHistogram(results) {
 			vAxis: { 
 				title: 'number of tests',
 				scaleType: 'mirrorLog',
-
 			},
 			hAxis: {
 				title: 'time in ms',
-				viewWindowMode: 'explicit',
-			}
-
+				viewWindowMode: 'maximized',
+			},
+			// Use an HTML tooltip.
+			tooltip: { isHtml: true }			
 		};
 		var div_id = "chart_div_" + "hist";
-		var str = '<div id="' + div_id + '"></div>';
+		var str = '<div id="' + div_id + '" style="height:50%;width:90%"></div>';
 		console.log(str);
 		$('#charts').append(str);
 		var chart = new google.visualization.Histogram(document.getElementById(div_id));
 		chart.draw(data, options);
+		
+		google.visualization.events.addListener(chart, 'select', function() {
+			alert('selected');
+			var selection = chart.getSelection()[0];
+			console.log(selection);
+			console.log(selection.row);
+			console.log(selection.column);
+			console.log(data);
+			console.log(data.getFormattedValue(selection.column - 1, selection.column - 1));
+		});
 	}
 }

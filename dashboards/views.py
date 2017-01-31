@@ -8,7 +8,7 @@ import collections
 def index(request):
   oss_dict = collections.OrderedDict()
   oss_dict['all'] = {
-    'name': 'all',
+    'name': 'mixed',
     'checked': 'checked',
     'disabled': '',
     'innerHtml': 'Mixed',
@@ -51,7 +51,7 @@ def get_data(request):
     request.GET['os'],
   )
   dict_response = {
-    'tests': runtimes_of_tests
+    'tests': runtimes_of_tests,
   }
   json_obj = json.dumps(dict_response, default=lambda o: o.__dict__)
   return HttpResponse(json_obj, content_type='application/json')

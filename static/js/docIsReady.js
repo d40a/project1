@@ -1,5 +1,7 @@
 $(document).ready(function () {
 	$("#btn_submit").click(function (e) {
+		console.log('Clicked!');
+
 		e.preventDefault();
 		$('#charts').empty();
 
@@ -8,7 +10,9 @@ $(document).ready(function () {
 				console.log(data);
 
 //				promptDrawingChart(data['buckets'], args['os']);
-				drawHistogram(prepairDataForHistogram(data.buckets));
+//				drawHistogram(prepairDataForHistogram(data.buckets));
+				var clChart = columnChart();
+				clChart.runDrawingChart(clChart.prepairDataForColumnChart(data));
 			});
 		}
 

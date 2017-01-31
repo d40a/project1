@@ -1,3 +1,8 @@
+ 
+
+//THIS IS NOT IN USE
+
+
 function prepairDataForHistogram(buckets) {
 	var result = [['Name of test', 'Runtime of test']];
 	for (var key in buckets) {
@@ -10,14 +15,6 @@ function prepairDataForHistogram(buckets) {
 		}
 	}
 	return result;
-}
-
-function prepairDataTable() {
-	var dataTable = new google.visualization.DataTable();
-	dataTable.addColumn('string', 'Name of a test');
-	dataTable.addColumn('number', 'Runtime of a test');
-	dataTable.addColumn({'type': 'string', 'role': 'tooltip', 'p': {'html': true}});
-	
 }
 
 function drawHistogram(results) {
