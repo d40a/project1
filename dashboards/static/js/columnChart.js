@@ -44,11 +44,15 @@ function columnChart() {
 		partition = defaultPartition();
 		buckets = fillBuckets(dataFromServer, partition);
 
-		for (var i = 0; i < buckets.length - 1; i++) {
-			dataForColumnChart.push([" < " + partition[i].toString(), buckets[i].length]);
+		for (var i = 0; i < buckets.length; i++) {
+            // it is possible to have smaller number of buckets because we cleaned up empty ones on in the tail
+            if (i < partition.length) {
+                dataForColumnChart.push([" < " + partition[i].toString(), buckets[i].length]);
+            }
+            else {
+                dataForColumnChart.push(['Rest', buckets[buckets.length - 1].length]);
+            }
 		}
-
-		dataForColumnChart.push(['Rest', buckets[buckets.length - 1].length]);
 		return dataForColumnChart;
 	};
 	
@@ -104,14 +108,9 @@ function columnChart() {
 
 			google.visualization.events.addListener(chart, 'select', function () {
 				var selection = chart.getSelection();
-				// selection structure: 
-				// Array[1]
-				//  0:Object
-				// 	 column:1
-				//   row:1
 
 				if (selection.length > 0) {
-					var row = selection[0].row;
+					var row = selection[0].row; // getting number of selected row
 					printTestsFromBucket(row, div);
 				}
 			});
@@ -120,7 +119,7 @@ function columnChart() {
 
 
 
-	this.printTestsFromBucket = function(bucketsIndex, div) {
+	function printTestsFromBucket(bucketsIndex, div) {
 		for (var i = 0; i < buckets[bucketsIndex].length; i++) {
 			var test = buckets[bucketsIndex][i];
 			console.log(JSON.stringify(test));
