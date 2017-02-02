@@ -1,16 +1,5 @@
-function columnChart() { 
+function columnChart(partition) { 
 	var buckets;
-	var partition;
-	// return sizes of backets - logarithmic scale
-	function defaultPartition() {
-		var partition = [1];
-		var base = 10;
-		for (var i = 0; i < 7; i++) {
-			partition.push(base);
-			base *= 10;
-		}
-		return partition;
-	};
 
 	function fillBuckets(tests, partition) {
  		buckets = new Array(partition.length + 1);
@@ -41,7 +30,6 @@ function columnChart() {
 
 	function prepairDataForColumnChart(dataFromServer) {
 		var dataForColumnChart = [['Number tests in bucket', "Test's runtime"]];
-		partition = defaultPartition();
 		buckets = fillBuckets(dataFromServer, partition);
 
 		for (var i = 0; i < buckets.length; i++) {
@@ -56,21 +44,7 @@ function columnChart() {
 		return dataForColumnChart;
 	};
 	
-	function Tag(attributes) {
-		// args: attributes - dictionary where key is tag's attribute and value is array of values
-		var html = '<' + attributes.tag;
-		for (var key in attributes) {
-			for (var i = 0; i < attributes[key].length; i++) {
-				if (i == 0) html += ' ' + key + '="'; 
-				else html += ' ';
-				html += attributes[key][i];
-			}
-			html += '"';
-		}
-		html += '></' + attributes.tag + '>';
-		this.html = html;
-		this.attributes = attributes;
-	};
+
 
 	this.runDrawingChart = function(tests, bot_os='default bot') {
 		
@@ -104,7 +78,7 @@ function columnChart() {
 			var div = new Tag({
 				'tag': ['div'],
 				'id': ['basic_column_chart_' + bot_os],
-				'style': ['max-height:700px;', 'height:700px;', 'overflow:auto;'],
+				'style': ['max-height:70%;', 'height:70%;', 'overflow:auto;'],
 				'class': ['col-md-6'],
 			});
 			
@@ -112,7 +86,7 @@ function columnChart() {
 				'tag': ['div'],
 				'id': ['wrapper_' + div.attributes.id],
 				'class': ['col-md-12'],
-				'style': ['max-height:700px;'],
+				'style': ['max-height:70%;'],
 			});
 			
 			$('#charts')
@@ -131,6 +105,8 @@ function columnChart() {
 					printTestsFromBucket(row, div);
 				}
 			});
+			console.log(cnt_comming_responces);
+			cnt_comming_responces -= 1;
 		}
 	};
 
@@ -145,7 +121,7 @@ function columnChart() {
 			'tag': ['div'],
 			'id': ['div_list_' + commonSuffixForIds], 
 			'class': ['col-md-6'],
-			'style': ['overflow:auto;', 'max-height:700px;'],
+			'style': ['overflow:auto;', 'max-height:70%;'],
 		});
 		
 		var uList = new Tag({
@@ -178,4 +154,15 @@ function columnChart() {
 		}
 		
 	}
+}
+
+// return sizes of backets - logarithmic scale
+columnChart.defaultPartition = function() {
+	var partition = [1];
+	var base = 10;
+	for (var i = 0; i < 6; i++) {
+		partition.push(base);
+		base *= 10;
+	}
+	return partition;
 }

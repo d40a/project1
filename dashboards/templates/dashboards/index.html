@@ -3,11 +3,14 @@
 <head>
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
 	{% load static from staticfiles %}
-	<script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+
+	<link rel="stylesheet" href="{%static '/css/main.css' %}">
+	<script type="text/javascript" src="{% static '/js/utils.js' %}"></script>
 	<script type="text/javascript" src="{% static '/js/columnChart.js' %}"></script>
 	<script type="text/javascript" src="{% static '/js/histogram.js' %}"></script>
 	<script type="text/javascript" src="{% static '/js/docIsReady.js' %}"></script>
 
+	<script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
 	<!-- BOOTSTRAP-->
 	<!-- Latest compiled and minified CSS -->
 	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
@@ -51,13 +54,38 @@
 
 					<button id="btn_submit" name="submit" class="btn btn-default"> Submit </button>
 
+					<div class="loader" style="visibility: hidden" id="loader"></div>
+
 				</div>
+
+				<div class="col-md-4 list-group" style="overflow:auto; max-height:25%;" id="test_suits">
+					<label> Choose a test </label>
+					{% for val in test_suits %}
+					<a class="list-group-item" id="test_suit_{{ val }}" value={{val}}> {{val}} </a> {% endfor %}
+				</div>
+
+				<div class="col-md-4" id="buckets_size_settings">
+
+					<div class="input-group">
+						<input type="text" class="form-control" id="bucket_size" placeholder="Enter a bucket size (e.g. 150)">
+						<span class="input-group-btn">
+    						<button class="btn btn-success" type="button" id="btn_add_bucket_size"> Add </button>
+  						</span>
+					</div> <br>
+
+
+					<div class="" style="overflow:auto; max-height:25%;">
+						<ul class="list-group" id="list_of_buckets">
+
+						</ul>
+					</div>
+				</div>
+
 			</div>
 		</form>
 
 		<div class="row">
 			<div id='charts'>
-
 			</div>
 		</div>
 

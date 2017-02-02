@@ -38,8 +38,15 @@ def index(request):
     'innerHtml': 'Mac os',
   }
 
+  test_suits = [
+    'ash_unittests',
+    'content_unittests',
+    'views_unittests',
+  ]
+
   context = Context({
     'oss': oss_dict,
+    'test_suits': test_suits,
   })
 
   return render(request, 'dashboards/index.html', context)

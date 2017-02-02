@@ -1,13 +1,73 @@
+var cnt_comming_responces = 0;
+
+
 $(document).ready(function () {
+	
+	function showPartition(partition) {
+		$('#list_of_buckets').empty();
+		partition = partition.sort(function(a,b){return a - b});
+ 
+		for (var i = 0; i < partition.length; i++) {
+			var innerHtml = partition[i].toString() 
+				+ ' ms.'
+			 	+ '<button type="button" class="btn btn-danger pull-right" name="btn_delete_perent">'
+			    + '<span class="glyphicon glyphicon-remove"></span>';
+		
+			var li = new Tag({
+					'tag': ['li'],
+					'class': ['list-group-item', 'clearfix'],
+					'value': [partition[i].toString()],
+				},
+				innerHtml
+			);
+			$("#list_of_buckets").append(li.html);
+		}
+		
+		$('[name=btn_delete_perent]').click(function(e) {
+			$(this).parent().remove();
+		});
+	}
+	
+	// TODO: Usage of angularJS could make the life easier...
+	var partition = columnChart.defaultPartition();
+	
+	$('#btn_add_bucket_size').click(function () {
+		// TODO: Validate input - allow input only numbers
+		var bucket_size = parseInt($('#bucket_size').val());
+		
+		$('#bucket_size').val("");
+	 	
+		if (!isNaN(bucket_size) && !partition.includes(bucket_size)) {
+			partition.push(parseInt(bucket_size));
+			showPartition(partition);
+		}
+	});
+	
+	showPartition(partition);
+	
+	
+	function getPartitions() {
+		var partition = [];
+		$("#list_of_buckets li").each(function(idx, li) {
+			console.log(li);
+			partition.push(li.value)
+		});
+		return partition;
+	}
+	
 	$("#btn_submit").click(function (e) {
 		console.log('Clicked!');
+		
+		// TODO: Loader not working right now
+		$('#loader').show();
 
 		e.preventDefault();
 		$('#charts').empty();
 
 		function getData(url, args) {
 			$.get(url, args, function (data) {
-				var clChart = new columnChart();
+				partition = getPartitions();
+				var clChart = new columnChart(partition);
 				clChart.runDrawingChart(data.tests, args.os);
 			});
 		}
@@ -23,6 +83,14 @@ $(document).ready(function () {
 					os: os,
 				}
 			);
+		});
+		
+		// TODO:  Show loader while requests processing 
+		if (cnt_comming_responces == 0) $('loader').hide();
+	});
+	$('#test_suits').children('a').each(function() {
+		this.addEventListener('click', function(e) {
+			$('#test_suit').val(e.target.innerText);
 		});
 	});
 });
