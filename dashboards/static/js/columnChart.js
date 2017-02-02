@@ -56,13 +56,19 @@ function columnChart() {
 		return dataForColumnChart;
 	};
 	
-	function DivTag(attributes) {
-		var tag = '<div';
+	function Tag(attributes) {
+		// args: attributes - dictionary where key is tag's attribute and value is array of values
+		var html = '<' + attributes.tag;
 		for (var key in attributes) {
-			tag += " " + key + '="' + attributes[key] + '"';
+			for (var i = 0; i < attributes[key].length; i++) {
+				if (i == 0) html += ' ' + key + '="'; 
+				else html += ' ';
+				html += attributes[key][i];
+			}
+			html += '"';
 		}
-		tag += '></div>'
-		this.tag = tag;
+		html += '></' + attributes.tag + '>';
+		this.html = html;
 		this.attributes = attributes;
 	};
 
@@ -94,21 +100,32 @@ function columnChart() {
 					title: 'number of tests',
 				},
 			};
-	
-			var div = new DivTag({
-				'id': 'basic_column_chart_' + bot_os,
-				'style': 'height: 700px;background-color:lavender;',
-				'class': 'col-md-6',
+			
+			var div = new Tag({
+				'tag': ['div'],
+				'id': ['basic_column_chart_' + bot_os],
+				'style': ['max-height:700px;', 'height:700px;', 'overflow:auto;'],
+				'class': ['col-md-6'],
 			});
-
-			$('#charts').append(div.tag);
-
+			
+			var wrapperDiv = new Tag({
+				'tag': ['div'],
+				'id': ['wrapper_' + div.attributes.id],
+				'class': ['col-md-12'],
+				'style': ['max-height:700px;'],
+			});
+			
+			$('#charts')
+				.append(wrapperDiv.html);
+			$('#' + wrapperDiv.attributes.id)
+				.append(div.html);
+			
 			var chart = new google.visualization.ColumnChart(document.getElementById(div.attributes.id));
 			chart.draw(data, options);
 
 			google.visualization.events.addListener(chart, 'select', function () {
 				var selection = chart.getSelection();
-
+				$('#' + div.attributes.id).next().remove();
 				if (selection.length > 0) {
 					var row = selection[0].row; // getting number of selected row
 					printTestsFromBucket(row, div);
@@ -117,12 +134,48 @@ function columnChart() {
 		}
 	};
 
-
-
+	// TODO: Delete previous list of test for the same dashboard (each list of tests div will have unique id that we can easily build knowing div_id)
 	function printTestsFromBucket(bucketsIndex, div) {
-		for (var i = 0; i < buckets[bucketsIndex].length; i++) {
-			var test = buckets[bucketsIndex][i];
-			console.log(JSON.stringify(test));
+		var tests = buckets[bucketsIndex].sort(function(a, b) {
+			return -(a.runtime - b.runtime);		
+		});
+		var commonSuffixForIds = bucketsIndex.toString() + '_' + div.attributes.id;
+		
+		var list_of_tests_div = new Tag({
+			'tag': ['div'],
+			'id': ['div_list_' + commonSuffixForIds], 
+			'class': ['col-md-6'],
+			'style': ['overflow:auto;', 'max-height:700px;'],
+		});
+		
+		var uList = new Tag({
+			'tag': ['ul'],
+			'id': ['list_' + commonSuffixForIds], 
+			'class': ['list-group'],
+		});
+		
+		$('#' + div.attributes.id)
+			.after(list_of_tests_div.html);
+		
+		$('#' + list_of_tests_div.attributes.id)
+			.append(uList.html);
+		
+		for (var i = 0; i < tests.length; i++) {
+			var test = tests[i];
+			var list_element = new Tag({
+				'tag': ['li'],
+				'class': ['list-group-item'],
+			});
+			
+			function testToHtml(test) {
+				var str = '<b>Test name: </b>' + test.name + '<br><b>Runtime: </b>' + test.runtime + 'ms <br><b>Task: </b>' + test.task_id;
+				return str; 
+			}
+			
+			$(list_element.html)
+				.appendTo('#' + uList.attributes.id)
+				.append(testToHtml(test));
 		}
+		
 	}
 }
