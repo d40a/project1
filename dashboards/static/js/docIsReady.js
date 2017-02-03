@@ -1,4 +1,14 @@
+
 $(document).ready(function () {
+	
+	var $loading = $('.loading_div').hide();
+	$(document)
+		.ajaxStart(function () {
+    		$loading.show();
+  		})
+  		.ajaxStop(function () {
+    		$loading.hide();
+  		});
 	
 	function showPartition(partition) {
 		$('#list_of_buckets').empty();
