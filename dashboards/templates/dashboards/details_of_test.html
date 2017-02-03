@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="">
+<head>
+				<meta charset="utf-8">
+				<meta name="viewport" content="width=device-width, initial-scale=1.0">
+				{% load static from staticfiles %}
+
+				<script type="text/javascript" src="{% static '/js/utils.js' %}"></script>
+				<script type="text/javascript" src="https://ajax.microsoft.com/ajax/jQuery/jquery-1.4.2.min.js"></script>
+				<title>Details of test</title>
+</head>
+
+<body>
+	<div id='tmp'></div>
+	
+ 	<script>
+		$(document).ready(function(){
+			//This sessionStorage.getItem(); is also a predefined function in javascript
+			//will retrieve session and get the value;
+			var name_of_test = sessionStorage.getItem("name_of_test");
+			var buckets = JSON.parse(sessionStorage.getItem("buckets"));
+			var bk = new Array(buckets.length);
+			for (var i = 0; i < bk.length; i++) bk[i] = new Array();
+//			var partition = JSON.parse(sessionStorage.getItem("partition"));
+
+			
+			for (var i = 0; i < buckets.length; i++) {
+				for (var j = 0; j < buckets[i].length; j++) {
+					var test = buckets[i][j];
+					if (test.name === name_of_test) {
+						bk[i].push(test);
+					}
+				}
+				bk[i] = bk[i].sort(function(a,b) {return -(a.runtime - b.runtime);});
+			}
+			$('body').append(name_of_test + "<br>");
+			for (var i = bk.length - 1; i >= 0; i--) {
+				for (var j = 0; j < bk[i].length; j++) {
+					var test = bk[i][j];
+					$('#tmp').append("runtime: " + test.runtime + " |||| taks_id : " + test.task_id + "<br>");
+				}
+			}
+			
+		});   	
+	</script>
+</body>
+</html>

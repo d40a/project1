@@ -62,3 +62,6 @@ def get_data(request):
   }
   json_obj = json.dumps(dict_response, default=lambda o: o.__dict__)
   return HttpResponse(json_obj, content_type='application/json')
+
+def details_of_test(request):
+  return render(request, 'dashboards/details_of_test.html')

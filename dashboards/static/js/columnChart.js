@@ -110,7 +110,6 @@ function columnChart(partition) {
 		}
 	};
 
-	// TODO: Delete previous list of test for the same dashboard (each list of tests div will have unique id that we can easily build knowing div_id)
 	function printTestsFromBucket(bucketsIndex, div) {
 		var tests = buckets[bucketsIndex].sort(function(a, b) {
 			return -(a.runtime - b.runtime);		
@@ -147,19 +146,31 @@ function columnChart(partition) {
 		for (var i = 0; i < tests.length; i++) {
 			var test = tests[i];
 			var list_element = new Tag({
-				'tag': ['li'],
+				'tag': ['a'],
 				'class': ['list-group-item'],
 			});
 			
 			function testToHtml(test) {
-				var str = '<b>Test name: </b>' + test.name + '<br><b>Runtime: </b>' + test.runtime + 'ms <br><b>Task: </b>' + test.task_id;
+				var str = '<b>Test name: </b>' + '<a name="details_test_link">' + test.name + '</a>' 
+					+ '<br><b>Runtime: </b>' + test.runtime 
+					+ 'ms <br><b>Task: </b>' + test.task_id;
 				return str; 
 			}
 			
 			$(list_element.html)
 				.appendTo('#' + uList.attributes.id)
 				.append(testToHtml(test));
+			
+			
 		}
+		// TODO: Redesign arcitecture(e.g. move all event listeners to separete file).
+		$('[name="details_test_link"]').click(function() {
+			var text = $(this).text();
+			console.log(text);
+			sessionStorage.setItem("name_of_test", text); 
+			sessionStorage.setItem("buckets", JSON.stringify(buckets));
+			window.open('details_of_test');
+		});
 		
 	}
 }
