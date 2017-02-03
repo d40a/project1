@@ -1,6 +1,3 @@
-var cnt_comming_responces = 0;
-
-
 $(document).ready(function () {
 	
 	function showPartition(partition) {
@@ -49,7 +46,6 @@ $(document).ready(function () {
 	function getPartitions() {
 		var partition = [];
 		$("#list_of_buckets li").each(function(idx, li) {
-			console.log(li);
 			partition.push(li.value)
 		});
 		return partition;
@@ -57,9 +53,6 @@ $(document).ready(function () {
 	
 	$("#btn_submit").click(function (e) {
 		console.log('Clicked!');
-		
-		// TODO: Loader not working right now
-		$('#loader').show();
 
 		e.preventDefault();
 		$('#charts').empty();
@@ -84,9 +77,6 @@ $(document).ready(function () {
 				}
 			);
 		});
-		
-		// TODO:  Show loader while requests processing 
-		if (cnt_comming_responces == 0) $('loader').hide();
 	});
 	$('#test_suits').children('a').each(function() {
 		this.addEventListener('click', function(e) {

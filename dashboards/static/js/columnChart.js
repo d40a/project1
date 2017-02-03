@@ -6,7 +6,7 @@ function columnChart(partition) {
 		for (var i = 0; i < buckets.length; i++) {
 			buckets[i] = new Array();
 		}
- 
+
 		for (var i = 0; i < tests.length; i++) {
 			var test = tests[i];
 			// looking for first number that is larger than test.runtime
@@ -78,7 +78,7 @@ function columnChart(partition) {
 			var div = new Tag({
 				'tag': ['div'],
 				'id': ['basic_column_chart_' + bot_os],
-				'style': ['max-height:70%;', 'height:70%;', 'overflow:auto;'],
+				'style': ['max-height:70%;', 'height:70%;'],
 				'class': ['col-md-6'],
 			});
 			
@@ -91,8 +91,10 @@ function columnChart(partition) {
 			
 			$('#charts')
 				.append(wrapperDiv.html);
+			
 			$('#' + wrapperDiv.attributes.id)
-				.append(div.html);
+				.append(div.html)
+				.after('<div class="col-md-12" style="height:10px;">');
 			
 			var chart = new google.visualization.ColumnChart(document.getElementById(div.attributes.id));
 			chart.draw(data, options);
@@ -105,8 +107,6 @@ function columnChart(partition) {
 					printTestsFromBucket(row, div);
 				}
 			});
-			console.log(cnt_comming_responces);
-			cnt_comming_responces -= 1;
 		}
 	};
 
@@ -121,20 +121,28 @@ function columnChart(partition) {
 			'tag': ['div'],
 			'id': ['div_list_' + commonSuffixForIds], 
 			'class': ['col-md-6'],
-			'style': ['overflow:auto;', 'max-height:70%;'],
 		});
 		
 		var uList = new Tag({
 			'tag': ['ul'],
 			'id': ['list_' + commonSuffixForIds], 
 			'class': ['list-group'],
+			'style': ['overflow:auto;', 'max-height:60%;'],
 		});
+		
+		var str = 'Time of tests in [' + ((bucketsIndex == 0) ? '0' : partition[bucketsIndex - 1].toString()) + ' ms,' + partition[bucketsIndex] + ' ms] interval:';
+		var lable = new Tag({
+				'tag': ['span'],
+				'class': ['label label-primary'],
+			},
+			str
+		);
 		
 		$('#' + div.attributes.id)
 			.after(list_of_tests_div.html);
 		
 		$('#' + list_of_tests_div.attributes.id)
-			.append(uList.html);
+			.append(lable.html, uList.html);
 		
 		for (var i = 0; i < tests.length; i++) {
 			var test = tests[i];
@@ -160,7 +168,7 @@ function columnChart(partition) {
 columnChart.defaultPartition = function() {
 	var partition = [1];
 	var base = 10;
-	for (var i = 0; i < 6; i++) {
+	for (var i = 0; i < 4; i++) {
 		partition.push(base);
 		base *= 10;
 	}
